@@ -54,7 +54,7 @@ export default function LandingPage() {
 
         {error && (
           <div className="bg-crema/20 py-3 text-center text-sm text-coffee-900">
-            Mode demo aktif karena Supabase belum siap: {error}
+            Data belum bisa dimuat dari Supabase: {error}
           </div>
         )}
 

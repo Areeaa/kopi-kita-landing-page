@@ -4,27 +4,79 @@ import { Link, useParams } from 'react-router-dom'
 import Footer from '../components/Footer'
 import Navbar from '../components/Navbar'
 import Seo from '../components/Seo'
-import { fallbackArticles, fallbackSiteConfig } from '../data/fallbackData'
 import { isSupabaseConfigured } from '../lib/supabaseClient'
 import { getArticleBySlug } from '../services/articleRepository'
 import { getSiteConfig } from '../services/siteConfigRepository'
 
+const emptySiteConfig = {
+  about_text: '',
+  address: '',
+  whatsapp_number: '',
+  instagram_url: '',
+}
+
 export default function ArticleDetail() {
   const { slug } = useParams()
-  const [article, setArticle] = useState(fallbackArticles.find((item) => item.slug === slug) || fallbackArticles[0])
-  const [config, setConfig] = useState(fallbackSiteConfig)
+  const [article, setArticle] = useState(null)
+  const [config, setConfig] = useState(emptySiteConfig)
+  const [loading, setLoading] = useState(true)
+  const [error, setError] = useState('')
 
   useEffect(() => {
-    if (!isSupabaseConfigured) return
+    if (!isSupabaseConfigured) {
+      setError('Supabase belum dikonfigurasi.')
+      setLoading(false)
+      return
+    }
 
     async function load() {
-      const [articleData, configData] = await Promise.all([getArticleBySlug(slug), getSiteConfig()])
-      setArticle(articleData)
-      setConfig(configData)
+      try {
+        setLoading(true)
+        const [articleData, configData] = await Promise.all([getArticleBySlug(slug), getSiteConfig()])
+        setArticle(articleData)
+        setConfig(configData)
+        setError('')
+      } catch (error) {
+        setError(error.message)
+      } finally {
+        setLoading(false)
+      }
     }
 
     load()
   }, [slug])
+
+  if (loading) {
+    return (
+      <>
+        <Seo title="Memuat Artikel | KOPI KITA" />
+        <Navbar />
+        <main className="grid min-h-[60vh] place-items-center bg-coffee-50 px-4 text-center text-coffee-900">
+          <p>Memuat artikel...</p>
+        </main>
+        <Footer config={config} />
+      </>
+    )
+  }
+
+  if (error || !article) {
+    return (
+      <>
+        <Seo title="Artikel Tidak Ditemukan | KOPI KITA" />
+        <Navbar />
+        <main className="grid min-h-[60vh] place-items-center bg-coffee-50 px-4 text-center">
+          <div>
+            <h1 className="text-3xl font-black text-coffee-900">Artikel tidak ditemukan</h1>
+            <p className="mt-3 text-coffee-900/65">{error || 'Konten artikel belum tersedia.'}</p>
+            <Link to="/#artikel" className="btn-primary mt-6">
+              <ArrowLeft size={18} /> Kembali
+            </Link>
+          </div>
+        </main>
+        <Footer config={config} />
+      </>
+    )
+  }
 
   return (
     <>

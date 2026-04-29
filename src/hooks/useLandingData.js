@@ -4,20 +4,33 @@ import { getArticles } from '../services/articleRepository'
 import { getProducts } from '../services/productRepository'
 import { getSiteConfig } from '../services/siteConfigRepository'
 import { getTestimonials } from '../services/testimonialRepository'
-import { fallbackArticles, fallbackProducts, fallbackSiteConfig, fallbackTestimonials } from '../data/fallbackData'
+
+const emptySiteConfig = {
+  about_text: '',
+  address: '',
+  whatsapp_number: '',
+  instagram_url: '',
+}
 
 export default function useLandingData() {
   const [state, setState] = useState({
-    products: fallbackProducts,
-    articles: fallbackArticles,
-    config: fallbackSiteConfig,
-    testimonials: fallbackTestimonials,
-    loading: isSupabaseConfigured,
+    products: [],
+    articles: [],
+    config: emptySiteConfig,
+    testimonials: [],
+    loading: true,
     error: '',
   })
 
   useEffect(() => {
-    if (!isSupabaseConfigured) return
+    if (!isSupabaseConfigured) {
+      setState((current) => ({
+        ...current,
+        loading: false,
+        error: 'Supabase belum dikonfigurasi.',
+      }))
+      return
+    }
 
     async function load() {
       try {
