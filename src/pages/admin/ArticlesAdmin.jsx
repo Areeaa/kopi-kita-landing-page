@@ -1,5 +1,6 @@
 import { Plus } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import RichTextEditor from '../../components/admin/RichTextEditor'
 import ResourceTable from '../../components/admin/ResourceTable'
 import { deleteArticle, getArticles, saveArticle } from '../../services/articleRepository'
 import { uploadImage } from '../../services/storageService'
@@ -41,6 +42,11 @@ export default function ArticlesAdmin() {
 
   async function handleSubmit(event) {
     event.preventDefault()
+    if (!form.content.trim()) {
+      setMessage('Konten artikel wajib diisi.')
+      return
+    }
+
     setLoading(true)
     setMessage('')
 
@@ -77,7 +83,7 @@ export default function ArticlesAdmin() {
             <option>Cerita Kopi</option>
             <option>Promo</option>
           </select>
-          <textarea className="field min-h-64" placeholder="Konten artikel" value={form.content} onChange={(event) => updateField('content', event.target.value)} required />
+          <RichTextEditor value={form.content} onChange={(value) => updateField('content', value)} />
           <input className="field" placeholder="Thumbnail URL" value={form.thumbnail_url} onChange={(event) => updateField('thumbnail_url', event.target.value)} />
           <input className="field" type="file" accept="image/*" onChange={(event) => setThumbnailFile(event.target.files?.[0] || null)} />
           <button className="btn-primary w-full" disabled={loading}>{loading ? 'Menyimpan...' : 'Simpan Artikel'}</button>

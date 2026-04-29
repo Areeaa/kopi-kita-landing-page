@@ -38,3 +38,43 @@ select {
 .field {
   @apply w-full rounded-md border border-coffee-500/20 bg-white px-3 py-2 text-sm outline-none ring-leaf/20 transition focus:border-leaf focus:ring-4;
 }
+
+.rich-editor h1,
+.article-content h1 {
+  @apply mb-4 mt-6 text-3xl font-black leading-tight text-coffee-900;
+}
+
+.rich-editor h2,
+.article-content h2 {
+  @apply mb-3 mt-5 text-2xl font-bold leading-snug text-coffee-900;
+}
+
+.rich-editor h3,
+.article-content h3 {
+  @apply mb-3 mt-5 text-xl font-bold leading-snug text-coffee-900;
+}
+
+.rich-editor p,
+.article-content p {
+  @apply mb-4 text-base leading-8;
+}
+
+.rich-editor blockquote,
+.article-content blockquote {
+  @apply my-5 border-l-4 border-crema bg-white px-5 py-4 text-lg font-semibold italic text-coffee-900;
+}
+
+.rich-editor ul,
+.article-content ul {
+  @apply mb-5 ml-6 list-disc space-y-2;
+}
+
+.rich-editor ol,
+.article-content ol {
+  @apply mb-5 ml-6 list-decimal space-y-2;
+}
+
+.rich-editor a,
+.article-content a {
+  @apply font-semibold text-leaf underline;
+}

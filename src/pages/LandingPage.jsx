@@ -8,6 +8,7 @@ import Seo from '../components/Seo'
 import TestimonialCarousel from '../components/TestimonialCarousel'
 import useLandingData from '../hooks/useLandingData'
 import { createWhatsAppLink } from '../utils/formatters'
+import { stripHtml } from '../utils/html'
 
 const heroImage = 'https://images.unsplash.com/photo-1509042239860-f550ce710b93?auto=format&fit=crop&w=1800&q=85'
 
@@ -141,7 +142,7 @@ export default function LandingPage() {
                   <div className="p-5">
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-leaf">{article.category || 'Artikel'}</p>
                     <h3 className="mt-3 text-xl font-bold text-coffee-900">{article.title}</h3>
-                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-coffee-900/65">{article.content}</p>
+                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-coffee-900/65">{stripHtml(article.content)}</p>
                   </div>
                 </Link>
               ))}
