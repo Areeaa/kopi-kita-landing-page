@@ -4,6 +4,7 @@ const allowedTags = new Set([
   'U',
   'STRONG',
   'EM',
+  'DIV',
   'P',
   'BR',
   'H1',
@@ -20,11 +21,33 @@ const allowedTags = new Set([
 const allowedStyles = new Set(['font-size', 'text-align'])
 
 export function stripHtml(value = '') {
-  if (typeof window === 'undefined') return String(value).replace(/<[^>]+>/g, '')
+  if (typeof window === 'undefined') {
+    return String(value)
+      .replace(/<(br|\/p|\/div|\/h[1-6]|\/li)>/gi, '\n')
+      .replace(/<[^>]+>/g, '')
+      .replace(/\n{3,}/g, '\n\n')
+      .trim()
+  }
 
   const element = document.createElement('div')
   element.innerHTML = value
-  return element.textContent || element.innerText || ''
+
+  function readNode(node) {
+    if (node.nodeType === Node.TEXT_NODE) return node.textContent
+    if (node.nodeType !== Node.ELEMENT_NODE) return ''
+
+    const text = Array.from(node.childNodes).map(readNode).join('')
+    if (['BR'].includes(node.tagName)) return '\n'
+    if (['P', 'DIV', 'H1', 'H2', 'H3', 'BLOCKQUOTE', 'LI'].includes(node.tagName)) return `${text}\n`
+    return text
+  }
+
+  return Array.from(element.childNodes)
+    .map(readNode)
+    .join('')
+    .replace(/[ \t]+\n/g, '\n')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
 }
 
 export function sanitizeHtml(value = '') {

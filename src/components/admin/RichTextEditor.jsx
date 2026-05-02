@@ -1,6 +1,5 @@
 import { Bold, Heading1, Heading2, Italic, List, ListOrdered, Pilcrow, Quote, Type, Underline } from 'lucide-react'
 import { useEffect, useRef } from 'react'
-import { sanitizeHtml } from '../../utils/html'
 
 const blockOptions = [
   { label: 'Title', value: 'H1', icon: Heading1 },
@@ -17,15 +16,28 @@ const sizeOptions = [
 
 export default function RichTextEditor({ value, onChange }) {
   const editorRef = useRef(null)
+  const lastExternalValueRef = useRef(value || '')
 
   useEffect(() => {
-    if (editorRef.current && editorRef.current.innerHTML !== value) {
-      editorRef.current.innerHTML = value || ''
+    const nextValue = value || ''
+    const editor = editorRef.current
+
+    if (!editor || lastExternalValueRef.current === nextValue) {
+      return
     }
+
+    if (document.activeElement === editor && nextValue !== '') {
+      return
+    }
+
+    editor.innerHTML = nextValue
+    lastExternalValueRef.current = nextValue
   }, [value])
 
   function emitChange() {
-    onChange(sanitizeHtml(editorRef.current?.innerHTML || ''))
+    const nextValue = editorRef.current?.innerHTML || ''
+    lastExternalValueRef.current = nextValue
+    onChange(nextValue)
   }
 
   function focusEditor() {
@@ -62,7 +74,7 @@ export default function RichTextEditor({ value, onChange }) {
           [Italic, 'italic', 'Italic'],
           [Underline, 'underline', 'Underline'],
         ].map(([Icon, command, label]) => (
-          <button key={command} type="button" className="rounded-md p-2 text-coffee-900 hover:bg-white" onClick={() => runCommand(command)} title={label}>
+          <button key={command} type="button" className="rounded-md p-2 text-coffee-900 hover:bg-white" onMouseDown={(event) => event.preventDefault()} onClick={() => runCommand(command)} title={label}>
             <Icon size={18} />
           </button>
         ))}
@@ -70,20 +82,20 @@ export default function RichTextEditor({ value, onChange }) {
         <span className="mx-1 h-6 w-px bg-coffee-500/20" />
 
         {blockOptions.map(({ label, value, icon: Icon }) => (
-          <button key={value} type="button" className="rounded-md p-2 text-coffee-900 hover:bg-white" onClick={() => runCommand('formatBlock', value)} title={label}>
+          <button key={value} type="button" className="rounded-md p-2 text-coffee-900 hover:bg-white" onMouseDown={(event) => event.preventDefault()} onClick={() => runCommand('formatBlock', value)} title={label}>
             <Icon size={18} />
           </button>
         ))}
 
         <span className="mx-1 h-6 w-px bg-coffee-500/20" />
 
-        <button type="button" className="rounded-md p-2 text-coffee-900 hover:bg-white" onClick={() => runCommand('insertUnorderedList')} title="Bullet list">
+        <button type="button" className="rounded-md p-2 text-coffee-900 hover:bg-white" onMouseDown={(event) => event.preventDefault()} onClick={() => runCommand('insertUnorderedList')} title="Bullet list">
           <List size={18} />
         </button>
-        <button type="button" className="rounded-md p-2 text-coffee-900 hover:bg-white" onClick={() => runCommand('insertOrderedList')} title="Numbered list">
+        <button type="button" className="rounded-md p-2 text-coffee-900 hover:bg-white" onMouseDown={(event) => event.preventDefault()} onClick={() => runCommand('insertOrderedList')} title="Numbered list">
           <ListOrdered size={18} />
         </button>
-        <button type="button" className="rounded-md p-2 text-coffee-900 hover:bg-white" onClick={() => runCommand('formatBlock', 'BLOCKQUOTE')} title="Quote">
+        <button type="button" className="rounded-md p-2 text-coffee-900 hover:bg-white" onMouseDown={(event) => event.preventDefault()} onClick={() => runCommand('formatBlock', 'BLOCKQUOTE')} title="Quote">
           <Quote size={18} />
         </button>
 
@@ -106,6 +118,12 @@ export default function RichTextEditor({ value, onChange }) {
         aria-label="Konten artikel"
         onInput={emitChange}
         onBlur={emitChange}
+        onPaste={(event) => {
+          event.preventDefault()
+          const text = event.clipboardData.getData('text/plain')
+          document.execCommand('insertText', false, text)
+          emitChange()
+        }}
         suppressContentEditableWarning
       />
     </div>

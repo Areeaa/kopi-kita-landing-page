@@ -5,6 +5,7 @@ import ResourceTable from '../../components/admin/ResourceTable'
 import { deleteArticle, getArticles, saveArticle } from '../../services/articleRepository'
 import { uploadImage } from '../../services/storageService'
 import { slugify } from '../../utils/formatters'
+import { sanitizeHtml, stripHtml } from '../../utils/html'
 
 const emptyArticle = {
   id: '',
@@ -42,7 +43,7 @@ export default function ArticlesAdmin() {
 
   async function handleSubmit(event) {
     event.preventDefault()
-    if (!form.content.trim()) {
+    if (!stripHtml(form.content).trim()) {
       setMessage('Konten artikel wajib diisi.')
       return
     }
@@ -52,7 +53,7 @@ export default function ArticlesAdmin() {
 
     try {
       const thumbnailUrl = thumbnailFile ? await uploadImage(thumbnailFile, 'articles') : form.thumbnail_url
-      await saveArticle({ ...form, thumbnail_url: thumbnailUrl })
+      await saveArticle({ ...form, content: sanitizeHtml(form.content), thumbnail_url: thumbnailUrl })
       setForm(emptyArticle)
       setThumbnailFile(null)
       await loadArticles()

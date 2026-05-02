@@ -142,7 +142,7 @@ export default function LandingPage() {
                   <div className="p-5">
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-leaf">{article.category || 'Artikel'}</p>
                     <h3 className="mt-3 text-xl font-bold text-coffee-900">{article.title}</h3>
-                    <p className="mt-3 line-clamp-3 text-sm leading-6 text-coffee-900/65">{stripHtml(article.content)}</p>
+                    <p className="mt-3 line-clamp-3 whitespace-pre-line text-sm leading-6 text-coffee-900/65">{stripHtml(article.content)}</p>
                   </div>
                 </Link>
               ))}

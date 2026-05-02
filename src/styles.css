@@ -55,7 +55,12 @@ select {
 }
 
 .rich-editor p,
+.rich-editor div,
 .article-content p {
+  @apply mb-4 text-base leading-8;
+}
+
+.article-content div {
   @apply mb-4 text-base leading-8;
 }
 
