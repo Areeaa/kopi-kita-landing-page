@@ -7,6 +7,7 @@ import ProductCard from '../components/ProductCard'
 import Seo from '../components/Seo'
 import TestimonialCarousel from '../components/TestimonialCarousel'
 import useLandingData from '../hooks/useLandingData'
+import useScrollReveal from '../hooks/useScrollReveal'
 import { createWhatsAppLink } from '../utils/formatters'
 import { stripHtml } from '../utils/html'
 
@@ -16,6 +17,7 @@ export default function LandingPage() {
   const { products, articles, config, testimonials, loading, error } = useLandingData()
   const [query, setQuery] = useState('')
   const [category, setCategory] = useState('Semua')
+  useScrollReveal([products.length, articles.length, testimonials.length])
 
   const categories = useMemo(() => ['Semua', ...new Set(products.map((product) => product.category).filter(Boolean))], [products])
   const filteredProducts = useMemo(() => {
@@ -30,12 +32,12 @@ export default function LandingPage() {
     <>
       <Seo title="KOPI KITA | Kopi Lokal Pilihan" description="Belanja kopi lokal, baca panduan seduh, dan pesan cepat via WhatsApp atau Shopee." />
       <Navbar />
-      <main>
+      <main className="page-enter">
         <section id="beranda" className="relative min-h-[86vh] overflow-hidden bg-coffee-900 text-white">
           <img src={heroImage} alt="Secangkir kopi KOPI KITA" className="absolute inset-0 h-full w-full object-cover opacity-55" />
           <div className="absolute inset-0 bg-coffee-900/45" />
           <div className="section-shell relative flex min-h-[86vh] items-center py-20">
-            <div className="max-w-3xl">
+            <div className="hero-copy max-w-3xl">
               <p className="text-sm font-bold uppercase tracking-[0.2em] text-coffee-100">Fresh roast dari Gunung Slamet</p>
               <h1 className="mt-5 text-5xl font-black leading-tight sm:text-6xl lg:text-7xl">KOPI KITA</h1>
               <p className="mt-6 max-w-2xl text-lg leading-8 text-coffee-50/90">
@@ -60,7 +62,7 @@ export default function LandingPage() {
         )}
 
         <section id="profil" className="bg-coffee-50 py-16">
-          <div className="section-shell grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center">
+          <div className="section-shell reveal grid gap-10 lg:grid-cols-[0.9fr_1.1fr] lg:items-center" data-reveal>
             <div>
               <p className="text-sm font-bold uppercase tracking-[0.18em] text-leaf">Profil UMKM</p>
               <h2 className="mt-3 text-4xl font-bold text-coffee-900">Dari biji lokal ke cangkir yang akrab.</h2>
@@ -75,7 +77,7 @@ export default function LandingPage() {
         </section>
 
         <section id="produk" className="bg-white py-16">
-          <div className="section-shell">
+          <div className="section-shell reveal" data-reveal>
             <div className="flex flex-col gap-6 md:flex-row md:items-end md:justify-between">
               <div>
                 <p className="text-sm font-bold uppercase tracking-[0.18em] text-leaf">Galeri Produk</p>
@@ -97,15 +99,17 @@ export default function LandingPage() {
               </div>
             </div>
             <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {filteredProducts.map((product) => (
-                <ProductCard key={product.id} product={product} whatsappNumber={config.whatsapp_number} />
+              {filteredProducts.map((product, index) => (
+                <div key={product.id} className="reveal" data-reveal style={{ transitionDelay: `${Math.min(index * 70, 280)}ms` }}>
+                  <ProductCard product={product} whatsappNumber={config.whatsapp_number} />
+                </div>
               ))}
             </div>
           </div>
         </section>
 
         <section id="panduan" className="bg-coffee-50 py-16">
-          <div className="section-shell grid gap-8 lg:grid-cols-[0.8fr_1.2fr]">
+          <div className="section-shell reveal grid gap-8 lg:grid-cols-[0.8fr_1.2fr]" data-reveal>
             <div>
               <p className="text-sm font-bold uppercase tracking-[0.18em] text-leaf">Brewing Guide</p>
               <h2 className="mt-3 text-4xl font-bold text-coffee-900">Seduh lebih enak tanpa menebak-nebak.</h2>
@@ -115,8 +119,8 @@ export default function LandingPage() {
                 ['V60', '1:15', 'Air 92-94°C, tuang bertahap 3 menit.'],
                 ['Aeropress', '1:12', 'Aduk 10 detik, plunge perlahan 30 detik.'],
                 ['Espresso', '1:2', '18g masuk, 36g keluar dalam 25-30 detik.'],
-              ].map(([method, ratio, note]) => (
-                <div key={method} className="rounded-lg bg-white p-5 shadow-sm">
+              ].map(([method, ratio, note], index) => (
+                <div key={method} className="reveal rounded-lg bg-white p-5 shadow-sm" data-reveal style={{ transitionDelay: `${index * 80}ms` }}>
                   <Coffee className="text-leaf" />
                   <h3 className="mt-4 text-xl font-bold">{method}</h3>
                   <p className="mt-1 text-2xl font-black text-crema">{ratio}</p>
@@ -130,14 +134,14 @@ export default function LandingPage() {
         <TestimonialCarousel items={testimonials} />
 
         <section id="artikel" className="bg-coffee-50 py-16">
-          <div className="section-shell">
+          <div className="section-shell reveal" data-reveal>
             <div className="max-w-2xl">
               <p className="text-sm font-bold uppercase tracking-[0.18em] text-leaf">Artikel & Blog</p>
               <h2 className="mt-3 text-4xl font-bold text-coffee-900">Cerita dan edukasi kopi terbaru.</h2>
             </div>
             <div className="mt-8 grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-              {articles.map((article) => (
-                <Link key={article.id} to={`/artikel/${article.slug}`} className="overflow-hidden rounded-lg bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md">
+              {articles.map((article, index) => (
+                <Link key={article.id} to={`/artikel/${article.slug}`} className="reveal overflow-hidden rounded-lg bg-white shadow-sm transition hover:-translate-y-1 hover:shadow-md" data-reveal style={{ transitionDelay: `${Math.min(index * 70, 280)}ms` }}>
                   <img className="h-48 w-full object-cover" src={article.thumbnail_url} alt={article.title} />
                   <div className="p-5">
                     <p className="text-xs font-semibold uppercase tracking-[0.16em] text-leaf">{article.category || 'Artikel'}</p>
@@ -151,7 +155,7 @@ export default function LandingPage() {
         </section>
 
         <section id="kontak" className="bg-white py-16">
-          <div className="section-shell grid gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-center">
+          <div className="section-shell reveal grid gap-8 lg:grid-cols-[1fr_0.9fr] lg:items-center" data-reveal>
             <div>
               <p className="text-sm font-bold uppercase tracking-[0.18em] text-leaf">Kontak</p>
               <h2 className="mt-3 text-4xl font-bold text-coffee-900">Butuh rekomendasi kopi? Kami bantu pilihkan.</h2>

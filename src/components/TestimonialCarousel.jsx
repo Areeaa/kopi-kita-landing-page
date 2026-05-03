@@ -9,7 +9,7 @@ export default function TestimonialCarousel({ items }) {
 
   return (
     <section className="bg-white py-16" id="testimoni">
-      <div className="section-shell">
+      <div className="section-shell reveal" data-reveal>
         <div className="max-w-2xl">
           <p className="text-sm font-bold uppercase tracking-[0.18em] text-leaf">Ulasan Pelanggan</p>
           <h2 className="mt-3 text-3xl font-bold text-coffee-900">Dipercaya untuk stok kopi harian.</h2>
